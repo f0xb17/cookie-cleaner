@@ -54,21 +54,19 @@ async function cleanBrowsingData() {
                         console.log(`Cookie deleted: ${cookie.name} (${url})`);
                     }
                 });
+                chrome.browsingData.remove({
+                    origins: [`http://${domain}`, `https://${domain}`]
+                }, {
+                    cookies: true,
+                    localStorage: true,
+                    indexedDB: true,
+                    cacheStorage: true,
+                });
             }
         });
     });
-
-    chrome.browsingData.remove({ since: 0 }, {
-        cache: true,
-        downloads: true,
-        fileSystems: true,
-        formData: true,
-        indexedDB: true,
-        localStorage: true,
-        serviceWorkers: true,
-        webSQL: true
-    });
 }
+
 
 function isDomainWhitelisted(domain, whitelist) {
     return whitelist.some(allowed => {
@@ -85,7 +83,18 @@ function constructCookieUrl(domain, path, isSecure) {
 
 async function cleanHistoryData() {
     chrome.browsingData.remove({ since: 0 }, {
-        history: true
+        history: true,
+        fileSystems: true,
+        formData: true,
+        passwords: true,
+        indexedDB: true,
+        serviceWorkers: true,
+        downloads: true,
+        appcache: true,
+        serviceWorkers: true,
+        pluginData: true,
+        cacheStorage: true,
+        webSQL: true
     });
     console.log("History removed!");
 }
