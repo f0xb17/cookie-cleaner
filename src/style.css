@@ -1,47 +1,70 @@
 body {
-  width: 250px;
-  padding: 10px;
+  text-align: center;
+  background: #f4f4f4;
+  padding: 20px;
+  width: 300px;
   font-family: Arial, sans-serif;
 }
 
 textarea {
   width: 100%;
-  height: 120px;
-  margin-top: 10px;
-  padding: 5px;
+  height: 100px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   font-size: 12px;
-  font-family: monospace;
-  border: 1px solid #ddd;
+  background: white;
   resize: none;
-  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-button {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
   background-color: #4CAF50;
   color: white;
   border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background 0.3s;
 }
 button:hover {
   background-color: #45a049;
 }
+
+#clearWhitelistBtn {
+  background-color: #f44336;
+}
+
+#clearWhitelistBtn:hover {
+  background-color: #d32f2f;
+}
+
 p {
   margin-top: 10px;
   font-size: 12px;
+}
+
+.heart {
+  color: red;
+  font-size: 20px;
+  margin-left: 5px;
+}
+
+h1 {
+  font-family: 'Arial', sans-serif;
+  font-size: 20px;
+  color: #2c3e50;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+h1 img {
+  width: 25px;
+  height: auto;
 }
