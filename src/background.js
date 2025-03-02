@@ -45,7 +45,6 @@ function constructCookieUrl(domain, path, isSecure) {
  * form data, indexedDB, local storage, passwords, and webSQL data from the browser.
  * The removal is done from the beginning of time (since 0).
  */
-
 async function cleanBrowserHistory() {
     chrome.browsingData.remove({ 
         "since": 0 
