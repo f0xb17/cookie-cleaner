@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Cookie Cleaner",
+  "author": "f0xb17 Solutions",
+  "version": "1.0",
+  "description": "This Plugin deletes all cookies and data from the browser, unless it is whitelisted. Also deletes history and cache, when browser window is closed.",
+  "permissions": ["browsingData", "storage", "alarms", "cookies"],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  }
+}
