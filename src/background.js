@@ -3,8 +3,15 @@ chrome.runtime.onStartup.addListener(async () => {
 })
 
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
+    let { whitelist } = await chrome.storage.local.get("whitelist")
     const url = removeInfo.url
     if (!url) {
+        await removeCookies()
+        return
+    }
+
+    const domain = new URL(url).hostname.replace(/^\./, "")
+    if (!hasEntryInWhitelist(domain, whitelist)) {
         console.log(`Tab ${tabId} closed. Starting cleaning process...`);
         await removeCookies()
     }
@@ -21,8 +28,8 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
  */
 function hasEntryInWhitelist(domain, whitelist) {
     return whitelist.some(allowed => {
-        allowed = allowed.replace(/^\*\./, '')
-        return domain === allowed || domain.endsWith('.', allowed)
+        allowed = allowed.replace(/^\*\./, "")
+        return domain === allowed || domain.endsWith("." + allowed)
     })
 }
 
@@ -45,6 +52,7 @@ function constructCookieUrl(domain, path, isSecure) {
  * form data, indexedDB, local storage, passwords, and webSQL data from the browser.
  * The removal is done from the beginning of time (since 0).
  */
+
 async function cleanBrowserHistory() {
     chrome.browsingData.remove({ 
         "since": 0 
@@ -79,19 +87,11 @@ function removeCookiesFromDomain(domain) {
     })
 }
 
-/**
- * Deletes all cookies, localStorage, indexedDB and cacheStorage from all domains
- * not in the whitelist. The whitelist is an array of strings where each string is
- * either a domain name (e.g. "example.com") or a domain name prefixed with "*."
- * (e.g. "*.example.com"). The method returns a Promise that resolves once all
- * cookies have been removed.
- */
 async function removeCookies() {
-    let { whitelist } = await chrome.storage.local.get('whitelist')
-
+    let { whitelist } = await chrome.storage.local.get("whitelist")
     chrome.cookies.getAll({}, (cookies) => {
         cookies.forEach((cookie) => {
-            const domain = cookie.domain.replace(/^\./, '')
+            const domain = cookie.domain.replace(/^\./, "")
             if (!hasEntryInWhitelist(domain, whitelist)) {
                 const url = constructCookieUrl(domain, cookie.path, cookie.secure)
                 chrome.cookies.remove({ url, name: cookie.name }, (details) => {
