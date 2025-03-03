@@ -4,7 +4,7 @@
   "author": "f0xb17 Solutions",
   "version": "1.0",
   "description": "This Plugin deletes all cookies and data from the browser, unless it is whitelisted. Also deletes history and cache, when browser window is closed.",
-  "permissions": ["browsingData", "storage", "alarms", "cookies"],
+  "permissions": ["browsingData", "storage", "alarms", "cookies", "contentSettings"],
   "host_permissions": ["<all_urls>"],
   "icons": {
     "16": "icon.png",
