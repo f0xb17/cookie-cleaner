@@ -1,5 +1,6 @@
 chrome.runtime.onStartup.addListener(async () => {
     cleanBrowserHistory()
+    await removeCookies()
 })
 
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
@@ -52,7 +53,6 @@ function constructCookieUrl(domain, path, isSecure) {
  * form data, indexedDB, local storage, passwords, and webSQL data from the browser.
  * The removal is done from the beginning of time (since 0).
  */
-
 async function cleanBrowserHistory() {
     chrome.browsingData.remove({ 
         "since": 0 
@@ -67,7 +67,7 @@ async function cleanBrowserHistory() {
         "history": true,
         "indexedDB": true,
         "localStorage": true,
-        "passwords": true,
+        "indexedDB": true,
         "webSQL": true
     })
 }
@@ -78,18 +78,28 @@ async function cleanBrowserHistory() {
  */
 function removeCookiesFromDomain(domain) {
     chrome.browsingData.remove({
-        "origins": [`http://${domain}`, `https://${domain}`]
+        "origins": [`http://${domain}`, `https://${domain}`],
+        "originTypes": {
+            "protectedWeb": true,
+            "unprotectedWeb": true
+        }
     }, {
         "cookies": true,
         "localStorage": true,
         "indexedDB": true,
         "cacheStorage": true,
+        "cache": true
     })
 }
 
+/**
+ * Removes all cookies, localStorage, indexedDB and cacheStorage from all domains
+ * not in the whitelist. Also removes all cookies from the blacklist.
+ */
 async function removeCookies() {
     let { whitelist } = await chrome.storage.local.get("whitelist")
-    chrome.cookies.getAll({}, (cookies) => {
+
+    chrome.cookies.getAll({ partitionKey: {} }, (cookies) => {
         cookies.forEach((cookie) => {
             const domain = cookie.domain.replace(/^\./, "")
             if (!hasEntryInWhitelist(domain, whitelist)) {
