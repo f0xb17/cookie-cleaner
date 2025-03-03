@@ -64,10 +64,8 @@ async function cleanBrowserHistory() {
         "downloads": true,
         "fileSystems": true,
         "formData": true,
-        "history": true,
         "indexedDB": true,
         "localStorage": true,
-        "indexedDB": true,
         "webSQL": true
     })
 }
@@ -85,10 +83,12 @@ function removeCookiesFromDomain(domain) {
         }
     }, {
         "cookies": true,
+        "appcache": true,
         "localStorage": true,
         "indexedDB": true,
         "cacheStorage": true,
-        "cache": true
+        "cache": true,
+        "webSQL": true
     })
 }
 
