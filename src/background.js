@@ -98,6 +98,7 @@ function removeCookiesFromDomain(domain) {
  */
 async function removeCookies() {
     let { whitelist } = await chrome.storage.local.get("whitelist")
+    whitelist = whitelist || []
 
     chrome.cookies.getAll({ partitionKey: {} }, (cookies) => {
         cookies.forEach((cookie) => {
@@ -116,3 +117,4 @@ async function removeCookies() {
         })
     })
 }
+  
