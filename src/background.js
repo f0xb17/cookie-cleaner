@@ -76,7 +76,7 @@ async function cleanBrowserHistory() {
  */
 function removeCookiesFromDomain(domain) {
     chrome.browsingData.remove({
-        "origins": [`http://${domain}`, `https://${domain}`],
+        "origins": [`http://${domain}/*`, `https://${domain}/*`, `http://*.${domain}/*`, `https://*.${domain}/*`],
         "originTypes": {
             "protectedWeb": true,
             "unprotectedWeb": true
