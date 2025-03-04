@@ -1,5 +1,5 @@
 chrome.runtime.onStartup.addListener(async () => {
-    cleanBrowserHistory()
+    await cleanBrowserHistory()
     await removeCookies()
 })
 
@@ -88,7 +88,7 @@ function removeCookiesFromDomain(domain) {
         "indexedDB": true,
         "cacheStorage": true,
         "cache": true,
-        "webSQL": true
+        "webSQL": truekit
     })
 }
 
@@ -97,24 +97,28 @@ function removeCookiesFromDomain(domain) {
  * not in the whitelist. Also removes all cookies from the blacklist.
  */
 async function removeCookies() {
-    let { whitelist } = await chrome.storage.local.get("whitelist")
-    whitelist = whitelist || []
+    try {
+        let { whitelist } = await chrome.storage.local.get("whitelist")
+        whitelist = whitelist || []
 
-    chrome.cookies.getAll({ partitionKey: {} }, (cookies) => {
-        cookies.forEach((cookie) => {
-            const domain = cookie.domain.replace(/^\./, "")
-            if (!hasEntryInWhitelist(domain, whitelist)) {
-                const url = constructCookieUrl(domain, cookie.path, cookie.secure)
-                chrome.cookies.remove({ url, name: cookie.name }, (details) => {
-                    if (chrome.runtime.lastError) {
-                        console.error(`Error while removing Cookie: ${chrome.runtime.lastError}`);
-                    } else {
-                        console.log(`Cookie deleted: ${cookie.name} (${url})`); 
-                    }
-                })
-                removeCookiesFromDomain(domain)
-            }
+        chrome.cookies.getAll({ partitionKey: {} }, (cookies) => {
+            cookies.forEach((cookie) => {
+                const domain = cookie.domain.replace(/^\./, "")
+                if (!hasEntryInWhitelist(domain, whitelist)) {
+                    const url = constructCookieUrl(domain, cookie.path, cookie.secure)
+                    chrome.cookies.remove({ url, name: cookie.name }, () => {
+                        if (chrome.runtime.lastError) {
+                            console.error(`Error while removing Cookie: ${chrome.runtime.lastError}`);
+                        } else {
+                            console.log(`Cookie deleted: ${cookie.name} (${url})`);
+                        }
+                    })
+                    removeCookiesFromDomain(domain)
+                }
+            })
         })
-    })
+    } catch (error) {
+        console.log(error)
+    }
 }
   
