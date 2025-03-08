@@ -88,7 +88,7 @@ function removeCookiesFromDomain(domain) {
         "indexedDB": true,
         "cacheStorage": true,
         "cache": true,
-        "webSQL": truekit
+        "webSQL": true
     })
 }
 
