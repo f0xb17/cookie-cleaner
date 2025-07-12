@@ -3,6 +3,10 @@
 ## About The Extension
 This Plugin deletes all cookies and data from the browser, unless it is whitelisted. Also deletes history and cache, when browser window is closed.
 
+<p align="center">
+ <img alt="App Screenshot" src="app.png" width=500 align="center">
+</p>
+
 ## Security
 * Manifest V3 compatible
 * No Data collection
