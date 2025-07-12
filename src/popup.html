@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whitelist Cleaner</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>
-        <img src="icon.png" alt="Icon">
-        Cookie Cleaner
-    </h1>
-    <textarea id="whitelistTextarea" readonly placeholder="*.example.com, example.com"></textarea>
-    <button id="addDomainBtn">Add current Page to Whitelist</button>
-    <p id="statusMsg"></p>
-    <button id="clearWhitelistBtn">Clear Whitelist</button>
-    <p>Made with<span class="heart">&hearts;</span> by f0xb17 Solutions</p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Whitelist</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1><img src="icon.png" alt="Icon" />&nbsp;&nbsp;Cookie Whitelist</h1>
+
+    <div class="current-tab-section">
+      <h2>Current Tab</h2>
+      <div id="currentDomainInfo">
+        <h3 id="domainWithoutWww"></h3>
+        <button id="toggleDomainWithoutWwwBtn" class="add-btn"></button>
+      </div>
+    </div>
+
+    <div class="whitelist-section">
+      <h2>Whitelist Entries</h2>
+      <ul id="whitelistDisplayList"></ul>
+      <button id="clearWhitelistBtn" class="remove-all-btn">Clear All Whitelist Entries</button>
+    </div>
+
     <script src="popup.js"></script>
-</body>
+  </body>
 </html>
