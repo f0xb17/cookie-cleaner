@@ -22,11 +22,6 @@ chrome.storage.onChanged.addListener((changes) => {
     }
 })
 
-chrome.runtime.onStartup.addListener(async () => {
-    await cleanBrowserHistory()
-    await removeCookies()
-})
-
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     const url = removeInfo.url
     if (!url) {
