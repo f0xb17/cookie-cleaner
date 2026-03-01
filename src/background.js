@@ -1,10 +1,33 @@
+/**
+ * Cached whitelist for domain checking.
+ * @type {string[]}
+ */
+let cachedWhitelist = []
+
+/**
+ * Initializes the cached whitelist from storage when the extension loads.
+ */
+chrome.storage.local.get("whitelist").then(({ whitelist }) => {
+    cachedWhitelist = whitelist || []
+})
+
+/**
+ * Updates the cached whitelist when storage changes.
+ * @param {Object} changes - Object containing changed storage values
+ * @param {string} namespace - The storage namespace ('local' or 'sync')
+ */
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.whitelist) {
+        cachedWhitelist = changes.whitelist.newValue || []
+    }
+})
+
 chrome.runtime.onStartup.addListener(async () => {
     await cleanBrowserHistory()
     await removeCookies()
 })
 
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-    let { whitelist } = await chrome.storage.local.get("whitelist")
     const url = removeInfo.url
     if (!url) {
         await removeCookies()
@@ -12,7 +35,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
     }
 
     const domain = new URL(url).hostname.replace(/^\./, "")
-    if (!hasEntryInWhitelist(domain, whitelist)) {
+    if (!hasEntryInWhitelist(domain, cachedWhitelist)) {
         console.log(`Tab ${tabId} closed. Starting cleaning process...`);
         await removeCookies()
     }
@@ -94,31 +117,42 @@ function removeCookiesFromDomain(domain) {
 
 /**
  * Removes all cookies, localStorage, indexedDB and cacheStorage from all domains
- * not in the whitelist. Also removes all cookies from the blacklist.
+ * not in the whitelist. Uses cached whitelist for performance and deduplicates
+ * domain cleanup operations.
+ * 
+ * @returns {Promise<void>} Resolves when all cookies are processed
  */
 async function removeCookies() {
     try {
-        let { whitelist } = await chrome.storage.local.get("whitelist")
-        whitelist = whitelist || []
+        const cookies = await new Promise(resolve => 
+            chrome.cookies.getAll({ partitionKey: {} }, resolve)
+        )
+        
+        const domainsToClean = new Set()
 
-        chrome.cookies.getAll({ partitionKey: {} }, (cookies) => {
-            cookies.forEach((cookie) => {
-                const domain = cookie.domain.replace(/^\./, "")
-                if (!hasEntryInWhitelist(domain, whitelist)) {
-                    const url = constructCookieUrl(domain, cookie.path, cookie.secure)
-                    chrome.cookies.remove({ url, name: cookie.name }, () => {
+        for (const cookie of cookies) {
+            const domain = cookie.domain.replace(/^\./, "")
+            if (!hasEntryInWhitelist(domain, cachedWhitelist)) {
+                const url = constructCookieUrl(domain, cookie.path, cookie.secure)
+                await new Promise(resolve => 
+                    chrome.cookies.remove({ url, name: cookie.name }, (removed) => {
                         if (chrome.runtime.lastError) {
-                            console.error(`Error while removing Cookie: ${chrome.runtime.lastError}`);
-                        } else {
-                            console.log(`Cookie deleted: ${cookie.name} (${url})`);
+                            console.error(`Error removing cookie: ${chrome.runtime.lastError.message}`)
+                        } else if (removed) {
+                            console.log(`Cookie deleted: ${cookie.name} (${url})`)
                         }
+                        resolve()
                     })
-                    removeCookiesFromDomain(domain)
-                }
-            })
-        })
+                )
+                domainsToClean.add(domain)
+            }
+        }
+
+        for (const domain of domainsToClean) {
+            removeCookiesFromDomain(domain)
+        }
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
   
